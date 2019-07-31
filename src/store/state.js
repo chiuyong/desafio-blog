@@ -1,10 +1,13 @@
 export default {
+  currentUser: {},
+  myPosts: [],
+  postComments: [],
   status: {
     loading: false,
     success: false,
     error: false
   },
-  post: {
+  currentPost: {
     id: '',
     title: '',
     content: '',
@@ -12,5 +15,4 @@ export default {
     user_id: '',
     created_at: ''
   }
-  
 }

@@ -4,6 +4,8 @@ import SignIn from '../components/SignIn'
 
 import Post from '../components/Post'
 import PostDetail from '../components/PostDetail'
+import CreatePost from '../components/CreatePost'
+import Feed from '../components/Feed'
 
 Vue.use(Router)
 
@@ -29,7 +31,17 @@ const router = new Router({
       name: 'PostDetail',
       props: true,
 			component: PostDetail,
-    }
+    },
+    {
+			path: '/createpost',
+      name: 'CreatePost',      
+			component: CreatePost,
+    },
+    {
+			path: '/feed',
+      name: 'Feed',
+			component: Feed,
+    },
     
 	]
 });

@@ -13,21 +13,22 @@
                 <v-form>
                   <v-text-field
                     v-model.trim="loginForm.email"
-                    prepend-icon="email"
+                    prepend-icon="mdi-email"
                     name="email"
                     id="email"
                     label="E-mail"
                     type="text"
                   ></v-text-field>
-
+                  <!--
                   <v-text-field
                     v-model.trim="loginForm.password"
                     id="password"
-                    prepend-icon="lock"
+                    prepend-icon="mdi-lock"
                     name="password"
                     label="Password"
                     type="password"
                   ></v-text-field>
+                  -->
                 </v-form>
               </v-card-text>
 
@@ -50,7 +51,6 @@
                     v-model="name"
                     v-model.trim="signupForm.name"
                     :error-messages="nameErrors"
-                    :counter="10"
                     label="Nome"
                     required
                     @input="$v.name.$touch()"
@@ -113,29 +113,28 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 import { validationMixin } from "vuelidate";
-import { required, maxLength, email } from "vuelidate/lib/validators";
+import { required, email } from "vuelidate/lib/validators";
 
 export default {
   mixins: [validationMixin],
   validations: {
-    name: { required, maxLength: maxLength(10) },
+    name: { required },
     email: { required, email },
-    password: { required },
-    age: { required }
+    age: { required },
+    password: { required }
   },
   data() {
     return {
       loginForm: {
-        email: "",
-        password: ""
+        email: ""
       },
       signupForm: {
         name: "",
         email: "",
-        password: "",
-        age: ""
+        age: "",
+        password: ""
       },
       showLoginForm: true,
       performingRequest: false,
@@ -146,8 +145,6 @@ export default {
     nameErrors() {
       const errors = [];
       if (!this.$v.name.$dirty) return errors;
-      !this.$v.name.maxLength &&
-        errors.push("Name must be at most 10 characters long");
       !this.$v.name.required && errors.push("Nome é obrigatório!");
       return errors;
     },
@@ -158,16 +155,16 @@ export default {
       !this.$v.email.required && errors.push("E-mail é obrigatório!");
       return errors;
     },
-    passwordErrors() {
-      const errors = [];
-      if (!this.$v.password.$dirty) return errors;
-      !this.$v.password.required && errors.push("Senha é obrigatório!");
-      return errors;
-    },
     ageErrors() {
       const errors = [];
       if (!this.$v.age.$dirty) return errors;
       !this.$v.age.required && errors.push("Idade é obrigatório!");
+      return errors;
+    },
+    passwordErrors() {
+      const errors = [];
+      if (!this.$v.password.$dirty) return errors;
+      !this.$v.password.required && errors.push("Senha é obrigatório!");
       return errors;
     }
   },
@@ -178,40 +175,74 @@ export default {
     },
     login() {
       this.performingRequest = true;
-      fb.auth
-        .signInWithEmailAndPassword(
-          this.loginForm.email,
-          this.loginForm.password
-        )
-        .then(user => {
-          this.$store.commit("setCurrentUser", user.user);
-          this.$store.dispatch("fetchUserProfile");
-          this.performingRequest = false;
-          this.errorMsg = ("Usuário", user.user.uid);
-          console.log("Usuário", user.user.uid);
-          this.$router.push("/searchuser");
+      //Requisição HTTP para pegar o id do User
+      axios
+        .get("https://desafio.tild.com.br/api/users")
+        .then(response => {
+          var obj = response.data;
+          //Varrer todas a pags USER API
+          for (var i = 1; i <= obj.last_page; i++) {
+            axios
+              //Página Atual
+              .get("https://desafio.tild.com.br/api/users?page=" + i)
+              .then(res => {
+                var currentPage = res.data;
+                //Verificar se Email Existe
+                for (var j = 0; j < currentPage.data.length; j++) {
+                  var user = currentPage.data[j];
+                  if (this.loginForm.email === user.email) {
+                    var user_id = user.id;
+
+                    //Fetch do User para pegar os dados
+                    axios
+                      .get("https://desafio.tild.com.br/api/users/" + user_id)
+                      .then(resp => {
+                        var currentUser = resp.data
+                        this.$store.dispatch(
+                          "setCurrentUser",
+                          currentUser
+                        );
+                        console.log(this.$store.getters.getCurrentUser);
+                        this.performingRequest = false;
+                        this.$router.push("/post");                        
+                      })
+                      .catch(error => {
+                        this.errorMsg = error;
+                        console.log(error);
+                      });
+                  }
+                }
+              })
+              .catch(error => {
+                this.errorMsg = error;
+                this.performingRequest = false;
+                console.log(error);
+              });
+          }
         })
-        .catch(err => {
-          console.log(err);
+        .catch(error => {
           this.performingRequest = false;
-          this.errorMsg = err.message;
+          console.log(error);
         });
     },
     signup() {
-      this.performingRequest = true;  
+      this.performingRequest = true;
       axios
         .post("https://desafio.tild.com.br/api/users", {
           name: this.signupForm.name,
           email: this.signupForm.email,
-          password: this.signupForm.password,
-          age: this.signupForm.age
+          age: this.signupForm.age,
+          password: this.signupForm.password
         })
         .then(response => {
-          var obj = response.data;      
-          this.performingRequest = false;  
-          this.$router.push("/post")        
+          var obj = response.data;
+          this.$store.dispatch("setCurrentUser", obj);
+          console.log(this.$store.getters.getCurrentUser);
+          this.performingRequest = false;
+          this.$router.push("/post");
         })
         .catch(error => {
+          this.errorMsg = error;
           console.log(error);
         });
     }

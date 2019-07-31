@@ -1,3 +1,4 @@
+/*
 import Vue from 'vue'
 import Vuex from 'vuex'
 const fb = require('../config/firebaseConfig')
@@ -93,3 +94,4 @@ export const store = new Vuex.Store({
     }
   }
 });
+*/

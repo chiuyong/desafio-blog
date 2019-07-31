@@ -1,6 +1,4 @@
 export default {
- 
-  setDrawer: (state, payload) => { state.drawer = payload },
   LOADING: (state) => {
     state.status = {
       loading: true,
@@ -29,9 +27,17 @@ export default {
       error: false
     }
   },
-  SET_Posts: (state, payload) => { state.posts = payload },
-  SET_comments: (state, payload) => { state.comments = payload },
-  SET_PostComments: (state, payload) => {
+  SET_MYPOSTS: (state, payload) => { state.posts = state.posts.concat(payload) },
+  SET_CURRENT_USER: (state, payload) => { state.currentUser = payload },
+  SET_CURRENT_POST: (state, payload) => { 
+    state.id = payload.id,
+    state.title = payload.title,
+    state.content = payload.content,
+    state.image = payload.image,
+    state.user_id = payload.user_id,
+    state.created_at = payload.created_at
+  },
+  SET_POST_COMMENTS: (state, payload) => {
     let filtered = []
     let comments = state.comments
     for (let arr in comments) {

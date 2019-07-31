@@ -6,8 +6,8 @@
     <v-spacer></v-spacer>
 
     <v-toolbar-items>
-      <v-btn text active>My Posts</v-btn>
-      <v-btn text>Feed</v-btn>      
+      <v-btn text>Feed</v-btn>
+      <v-btn text>My Posts</v-btn>
       <v-btn text @click="createPost">Create Post</v-btn>
       <v-btn text>Logout</v-btn>
     </v-toolbar-items>
@@ -28,14 +28,14 @@
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="headline">{{post.title}}</v-list-item-title>
-                <v-list-item-subtitle>Autor: {{getAuthor()}} </v-list-item-subtitle>
+                <v-list-item-subtitle>Autor: {{getUserName(post.user_id)}}</v-list-item-subtitle>
                 <v-list-item-subtitle>Criado em: {{post.created_at | formatDate}}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
 
             <v-divider></v-divider>
 
-            <v-card-text class="text-justify">{{post.content}}</v-card-text>
+            <v-card-text class="text-justify">{{post.content | trimLength}}</v-card-text>
 
             <v-card-actions>
               <v-btn text color="deep-purple accent-4" @click="postDetail(post.id)">Ler Mais</v-btn>
@@ -51,33 +51,77 @@
 <script>
 import axios from "axios";
 import moment from "moment";
-import { mapGetters } from 'vuex';
 
 export default {
   data() {
     return {
-      posts: [], 
+      posts: [],
+      users: [],
       loading: true,
-      error: "",
-      user: {}
+      error: ""
     };
   },
-  computed: {    
-    ...mapGetters([
-      'getCurrentUser'
-    ])
-  },
   mounted() {
-    this.getMyPosts();  
+    this.getPosts();
+    this.getUsers();
   },
   methods: {
-    getMyPosts() {
-      this.user = this.getCurrentUser
-      for(var i = 0; i < this.user.posts.length; i++) {               
-        this.posts = this.posts.concat(this.user.posts[i]);   
+    getPosts() {
+      axios
+        .get("https://desafio.tild.com.br/api/posts")
+        .then(response => {
+          var obj = response.data;
+          //recuperar os objetos de cada pagina e concatenar
+          for (var i = 1; i <= obj.last_page; i++) {
+            axios
+              .get("https://desafio.tild.com.br/api/posts?page=" + i)
+              .then(response => {
+                this.posts = this.posts.concat(response.data.data);
+              })
+              .catch(error => {
+                this.error = error;
+                console.log(error);
+              });
+          }
+          this.loading = false;
+        })
+        .catch(error => {
+          this.error = error;
+          console.log(error);
+        });
+    },
+    getUsers() {
+      axios
+        .get("https://desafio.tild.com.br/api/users")
+        .then(response => {
+          var obj = response.data;
+          //recuperar os objetos de cada pagina e concatenar
+          for (var i = 1; i <= obj.last_page; i++) {
+            axios
+              .get("https://desafio.tild.com.br/api/users?page=" + i)
+              .then(response => {
+                this.users = this.users.concat(response.data.data);
+              })
+              .catch(error => {
+                this.error = error;
+                console.log(error);
+              });
+          }
+          this.loading = false;
+        })
+        .catch(error => {
+          this.error = error;
+          console.log(error);
+        });
+    },
+    getUserName(user_id) {
+      for (var i = 0; i < this.users.length; i++) {
+        var user = this.users[i];
+        if (user.id === user_id) {
+          return user.name;
+        }
       }
-      this.loading = false;
-    },    
+    },
     postDetail(post_id) {
       console.log("postdetail");
       this.$router.push("/postdetail/" + post_id);
@@ -89,9 +133,6 @@ export default {
     feed() {
       console.log("feed");
       this.$router.push("/feed");
-    },
-    getAuthor() {
-      return this.user.name;
     }
   },
   filters: {
@@ -101,7 +142,12 @@ export default {
       }
       return moment(val).format("YYYY-MM-DD");
     },
-    
+    trimLength(val) {
+      if (val.length < 30) {
+        return val;
+      }
+      return `${val.substring(0, 30)}...`;
+    }
   }
 };
 </script>
