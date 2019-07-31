@@ -27,7 +27,7 @@ export default {
       error: false
     }
   },
-  SET_MYPOSTS: (state, payload) => { state.posts = state.posts.concat(payload) },
+  SET_MYPOSTS: (state, payload) => { state.posts = payload },
   SET_CURRENT_USER: (state, payload) => { state.currentUser = payload },
   SET_CURRENT_POST: (state, payload) => { 
     state.id = payload.id,

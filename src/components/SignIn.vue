@@ -204,7 +204,7 @@ export default {
                         );
                         console.log(this.$store.getters.getCurrentUser);
                         this.performingRequest = false;
-                        this.$router.push("/post");                        
+                        this.$router.push("/post/" + currentUser.id);                        
                       })
                       .catch(error => {
                         this.errorMsg = error;

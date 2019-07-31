@@ -111,11 +111,12 @@ export default {
   },
   methods: {
     newPost() {
+      console.log(this.getCurrentUser.id)
       axios
         .post("https://desafio.tild.com.br/api/posts", {
           title: this.createPostForm.title,
           content: this.createPostForm.content,
-          user_id: this.getCurrentUser                    
+          user_id: this.getCurrentUser.id            
         })
         .then(response => {
           var obj = response.data;          

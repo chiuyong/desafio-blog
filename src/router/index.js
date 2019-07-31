@@ -23,7 +23,7 @@ const router = new Router({
       component: SignIn,
     },
     {
-			path: '/post',
+			path: '/post/:user_id',
       name: 'Post',
       props: true,
       component: Post,
@@ -41,7 +41,7 @@ const router = new Router({
       }
     },
     {
-			path: '/createpost',
+			path: '/createpost/',
       name: 'CreatePost',
       props: true,      
       component: CreatePost,

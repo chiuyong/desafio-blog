@@ -66,7 +66,7 @@ export default {
     ...mapGetters(["getCurrentUser"])
   },
   mounted() {
-    this.getMyPosts();
+    this.getCurrentPost(this.$route.params.user_id);
   },
   methods: {
     getMyPosts() {
@@ -96,6 +96,18 @@ export default {
       console.log("myPost");
       this.$router.push("/post");
     },
+    getCurrentPost(user_id) {
+      console.log(user_id)
+      axios
+        .get("https://desafio.tild.com.br/api/users/" + user_id)
+        .then(response => {
+          this.posts = response.data.posts;
+          this.loading = false;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   },
   filters: {
     formatDate(val) {
