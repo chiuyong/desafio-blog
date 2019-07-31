@@ -239,7 +239,7 @@ export default {
           this.$store.dispatch("setCurrentUser", obj);
           console.log(this.$store.getters.getCurrentUser);
           this.performingRequest = false;
-          this.$router.push("/post");
+          this.$router.push("/post/" + obj.id);
         })
         .catch(error => {
           this.errorMsg = error;
