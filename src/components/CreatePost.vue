@@ -6,9 +6,9 @@
       <v-spacer></v-spacer>
 
       <v-toolbar-items>
-        <v-btn text>Feed</v-btn>
-        <v-btn text>My Posts</v-btn>
-        <v-btn text>Create Post</v-btn>
+        <v-btn text @click="myPost">My Posts</v-btn>
+        <v-btn text @click="feed">Feed</v-btn>        
+        <v-btn text @click="createPost">Create Post</v-btn>
         <v-btn text>Logout</v-btn>
       </v-toolbar-items>
     </v-toolbar>
@@ -114,7 +114,7 @@ export default {
       axios
         .post("https://desafio.tild.com.br/api/posts", {
           title: this.createPostForm.title,
-          content: this.signupForm.content,
+          content: this.createPostForm.content,
           user_id: this.getCurrentUser                    
         })
         .then(response => {
@@ -128,41 +128,21 @@ export default {
           console.log(error);
         });
     },
-    getUsers() {
-      axios
-        .get("https://desafio.tild.com.br/api/users")
-        .then(response => {
-          var obj = response.data;
-          //recuperar os objetos de cada pagina e concatenar
-          for (var i = 1; i <= obj.last_page; i++) {
-            axios
-              .get("https://desafio.tild.com.br/api/users?page=" + i)
-              .then(response => {
-                this.users = this.users.concat(response.data.data);
-              })
-              .catch(error => {
-                this.error = error;
-                console.log(error);
-              });
-          }
-          this.loading = false;
-        })
-        .catch(error => {
-          this.error = error;
-          console.log(error);
-        });
-    },
-    getUserName(user_id) {
-      for (var i = 0; i < this.users.length; i++) {
-        var user = this.users[i];
-        if (user.id === user_id) {
-          return user.name;
-        }
-      }
-    },
     postDetail(post_id) {
       console.log("oi");
       this.$router.push("/postdetail/" + post_id);
+    },
+    createPost() {
+      console.log("createpost");
+      this.$router.push("/createpost");
+    },
+    feed() {
+      console.log("feed");
+      this.$router.push("/feed");
+    },
+    myPost() {
+      console.log("myPost");
+      this.$router.push("/post");
     }
   }
 };

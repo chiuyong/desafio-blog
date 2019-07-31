@@ -6,6 +6,7 @@ import Post from '../components/Post'
 import PostDetail from '../components/PostDetail'
 import CreatePost from '../components/CreatePost'
 import Feed from '../components/Feed'
+import store from '../store'
 
 Vue.use(Router)
 
@@ -23,34 +24,47 @@ const router = new Router({
     },
     {
 			path: '/post',
-			name: 'Post',
-			component: Post,       
+      name: 'Post',
+      props: true,
+      component: Post,
+      meta: {
+        requiresAuth: true
+      }       
 		},
     {
 			path: '/postdetail/:post_id',
       name: 'PostDetail',
       props: true,
-			component: PostDetail,
+      component: PostDetail,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
 			path: '/createpost',
-      name: 'CreatePost',      
-			component: CreatePost,
+      name: 'CreatePost',
+      props: true,      
+      component: CreatePost,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
 			path: '/feed',
       name: 'Feed',
-			component: Feed,
+      props: true,
+      component: Feed,
+      meta: {
+        requiresAuth: true
+      }
     },
     
 	]
 });
 
-/*
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(x => x.meta.requiresAuth);
-  const currentUser = firebase.auth().currentUser;
-
+  var currentUser = store.state.currentUser;
   if (requiresAuth && !currentUser) {
     next('/signin');
   } else if (requiresAuth && currentUser) {
@@ -59,6 +73,6 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-*/
+
 
 export default router

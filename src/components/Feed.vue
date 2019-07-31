@@ -1,18 +1,18 @@
 <template>
   <v-container fluid>
-     <v-toolbar>
-    <v-toolbar-title>Meu Blog</v-toolbar-title>
+    <v-toolbar>
+      <v-toolbar-title>Meu Blog</v-toolbar-title>
 
-    <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
 
-    <v-toolbar-items>
-      <v-btn text>Feed</v-btn>
-      <v-btn text>My Posts</v-btn>
-      <v-btn text @click="createPost">Create Post</v-btn>
-      <v-btn text>Logout</v-btn>
-    </v-toolbar-items>
-  </v-toolbar>
-  
+      <v-toolbar-items>
+        <v-btn text @click="myPost">My Posts</v-btn>
+        <v-btn text @click="feed">Feed</v-btn>
+        <v-btn text @click="createPost">Create Post</v-btn>
+        <v-btn text>Logout</v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+
     <v-container v-if="loading">
       <div class="text-xs-center">
         <v-progress-circular indeterminate :size="150" :width="8" color="green"></v-progress-circular>
@@ -133,6 +133,10 @@ export default {
     feed() {
       console.log("feed");
       this.$router.push("/feed");
+    },
+    myPost() {
+      console.log("myPost");
+      this.$router.push("/post");
     }
   },
   filters: {

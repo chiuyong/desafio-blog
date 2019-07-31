@@ -197,7 +197,7 @@ export default {
                     axios
                       .get("https://desafio.tild.com.br/api/users/" + user_id)
                       .then(resp => {
-                        var currentUser = resp.data
+                        var currentUser = resp.data                        
                         this.$store.dispatch(
                           "setCurrentUser",
                           currentUser
@@ -235,7 +235,7 @@ export default {
           password: this.signupForm.password
         })
         .then(response => {
-          var obj = response.data;
+          var obj = response.data;          
           this.$store.dispatch("setCurrentUser", obj);
           console.log(this.$store.getters.getCurrentUser);
           this.performingRequest = false;

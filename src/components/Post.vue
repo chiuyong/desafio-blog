@@ -1,18 +1,18 @@
 <template>
   <v-container fluid>
-     <v-toolbar>
-    <v-toolbar-title>Meu Blog</v-toolbar-title>
+    <v-toolbar>
+      <v-toolbar-title>Meu Blog</v-toolbar-title>
 
-    <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
 
-    <v-toolbar-items>
-      <v-btn text active>My Posts</v-btn>
-      <v-btn text>Feed</v-btn>      
-      <v-btn text @click="createPost">Create Post</v-btn>
-      <v-btn text>Logout</v-btn>
-    </v-toolbar-items>
-  </v-toolbar>
-  
+      <v-toolbar-items>
+        <v-btn text @click="myPost">My Posts</v-btn>
+        <v-btn text @click="feed">Feed</v-btn>
+        <v-btn text @click="createPost">Create Post</v-btn>
+        <v-btn text>Logout</v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+
     <v-container v-if="loading">
       <div class="text-xs-center">
         <v-progress-circular indeterminate :size="150" :width="8" color="green"></v-progress-circular>
@@ -28,7 +28,7 @@
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title class="headline">{{post.title}}</v-list-item-title>
-                <v-list-item-subtitle>Autor: {{getAuthor()}} </v-list-item-subtitle>
+                <v-list-item-subtitle>Autor: {{getAuthor()}}</v-list-item-subtitle>
                 <v-list-item-subtitle>Criado em: {{post.created_at | formatDate}}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -51,33 +51,32 @@
 <script>
 import axios from "axios";
 import moment from "moment";
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
-      posts: [], 
+      posts: [],
       loading: true,
       error: "",
       user: {}
     };
   },
-  computed: {    
-    ...mapGetters([
-      'getCurrentUser'
-    ])
+  computed: {
+    ...mapGetters(["getCurrentUser"])
   },
   mounted() {
-    this.getMyPosts();  
+    this.getMyPosts();
   },
   methods: {
     getMyPosts() {
-      this.user = this.getCurrentUser
-      for(var i = 0; i < this.user.posts.length; i++) {               
-        this.posts = this.posts.concat(this.user.posts[i]);   
+      console.log(this.getCurrentUser);
+      this.user = this.getCurrentUser;
+      for (var i = 0; i < this.user.posts.length; i++) {
+        this.posts = this.posts.concat(this.user.posts[i]);
       }
       this.loading = false;
-    },    
+    },
     postDetail(post_id) {
       console.log("postdetail");
       this.$router.push("/postdetail/" + post_id);
@@ -92,7 +91,11 @@ export default {
     },
     getAuthor() {
       return this.user.name;
-    }
+    },
+    myPost() {
+      console.log("myPost");
+      this.$router.push("/post");
+    },
   },
   filters: {
     formatDate(val) {
@@ -100,8 +103,7 @@ export default {
         return "-";
       }
       return moment(val).format("YYYY-MM-DD");
-    },
-    
+    }
   }
 };
 </script>
